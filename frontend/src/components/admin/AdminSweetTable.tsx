@@ -74,9 +74,9 @@ export const AdminSweetTable = ({ sweets, isLoading }: AdminSweetTableProps) => 
             <TableRow key={sweet.id}>
               <TableCell>
                 <div className="flex items-center gap-3">
-                  {sweet.image_url ? (
+                  {sweet.imageUrl ? (
                     <img
-                      src={sweet.image_url}
+                      src={sweet.imageUrl}
                       alt={sweet.name}
                       className="h-10 w-10 rounded-lg object-cover"
                     />

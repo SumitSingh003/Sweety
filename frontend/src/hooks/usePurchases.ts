@@ -1,25 +1,14 @@
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { sweetsApi } from '@/lib/api';
 import { PurchaseHistory } from '@/types';
 
-export const usePurchases = (userId?: string) => {
+export const usePurchases = (enabled: boolean) => {
   return useQuery({
-    queryKey: ['purchases', userId],
+    queryKey: ['purchases'],
     queryFn: async (): Promise<PurchaseHistory[]> => {
-      if (!userId) return [];
-
-      const { data, error } = await supabase
-        .from('purchase_history')
-        .select(`
-          *,
-          sweet:sweets(*)
-        `)
-        .eq('user_id', userId)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      return data as PurchaseHistory[];
+      const { data } = await sweetsApi.purchases();
+      return data;
     },
-    enabled: !!userId,
+    enabled,
   });
 };

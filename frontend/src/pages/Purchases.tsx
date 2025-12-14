@@ -11,7 +11,7 @@ import { format } from 'date-fns';
 const Purchases = () => {
   const { user, isLoading: authLoading } = useAuth();
   const navigate = useNavigate();
-  const { data: purchases, isLoading } = usePurchases(user?.id);
+  const { data: purchases, isLoading } = usePurchases(!!user);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -73,9 +73,9 @@ const Purchases = () => {
               >
                 <CardContent className="p-4">
                   <div className="flex items-center gap-4">
-                    {purchase.sweet?.image_url ? (
+                    {purchase.sweet?.imageUrl ? (
                       <img
-                        src={purchase.sweet.image_url}
+                        src={purchase.sweet.imageUrl}
                         alt={purchase.sweet.name}
                         className="h-16 w-16 rounded-lg object-cover"
                       />
@@ -89,12 +89,12 @@ const Purchases = () => {
                         {purchase.sweet?.name || 'Unknown Sweet'}
                       </h3>
                       <p className="text-sm text-muted-foreground">
-                        {format(new Date(purchase.created_at), 'PPP p')}
+                        {format(new Date(purchase.createdAt), 'PPP p')}
                       </p>
                     </div>
                     <div className="text-right">
                       <p className="font-bold text-primary">
-                        ₹{Number(purchase.price_at_purchase).toFixed(2)}
+                        ₹{Number(purchase.priceAtPurchase).toFixed(2)}
                       </p>
                       <Badge variant="secondary">Qty: {purchase.quantity}</Badge>
                     </div>
@@ -107,7 +107,7 @@ const Purchases = () => {
               <div className="flex justify-between items-center">
                 <span className="text-muted-foreground">Total Purchases</span>
                 <span className="font-bold text-lg text-foreground">
-                  ₹{purchases.reduce((sum, p) => sum + Number(p.price_at_purchase) * p.quantity, 0).toFixed(2)}
+                  ₹{purchases.reduce((sum, p) => sum + Number(p.priceAtPurchase) * p.quantity, 0).toFixed(2)}
                 </span>
               </div>
             </div>

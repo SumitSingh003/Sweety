@@ -1,6 +1,15 @@
-import axios from 'axios';
+import axios from "axios";
 
-const API_URL = 'http://localhost:3000';
+const API_URL = "http://localhost:3000";
+
+type Session = {
+  access_token: string;
+};
+
+type AuthChangeCallback = (
+  event: string,
+  session: Session | null
+) => void;
 
 export const supabase = {
   auth: {
@@ -10,11 +19,15 @@ export const supabase = {
         password,
       });
 
+      const session = {
+        access_token: res.data.accessToken,
+      };
+
+      localStorage.setItem("token", session.access_token);
+
       return {
         data: {
-          session: {
-            access_token: res.data.accessToken,
-          },
+          session,
           user: { email },
         },
         error: null,
@@ -28,14 +41,51 @@ export const supabase = {
       });
 
       return {
-        data: { user: { email } },
+        data: {
+          user: { email },
+        },
         error: null,
       };
     },
 
     signOut: async () => {
-      localStorage.removeItem('token');
+      localStorage.removeItem("token");
       return { error: null };
+    },
+
+    // ✅ REQUIRED BY AuthContext
+    getSession: async () => {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        return { data: { session: null }, error: null };
+      }
+
+      return {
+        data: {
+          session: { access_token: token },
+        },
+        error: null,
+      };
+    },
+
+    // ✅ REQUIRED BY AuthContext
+    onAuthStateChange: (callback: AuthChangeCallback) => {
+      const token = localStorage.getItem("token");
+
+      if (token) {
+        callback("SIGNED_IN", { access_token: token });
+      } else {
+        callback("SIGNED_OUT", null);
+      }
+
+      return {
+        data: {
+          subscription: {
+            unsubscribe: () => {},
+          },
+        },
+      };
     },
   },
 };

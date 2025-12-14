@@ -30,7 +30,7 @@ const sweetSchema = z.object({
   description: z.string().max(500, 'Description too long').optional(),
   price: z.coerce.number().min(0.01, 'Price must be greater than 0'),
   quantity: z.coerce.number().int().min(0, 'Quantity cannot be negative'),
-  image_url: z.string().url('Must be a valid URL').optional().or(z.literal('')),
+  imageUrl: z.string().url('Must be a valid URL').optional().or(z.literal('')),
 });
 
 interface SweetFormDialogProps {
@@ -52,14 +52,14 @@ export const SweetFormDialog = ({ sweet, trigger }: SweetFormDialogProps) => {
       description: sweet?.description || '',
       price: sweet?.price || 0,
       quantity: sweet?.quantity || 0,
-      image_url: sweet?.image_url || '',
+      imageUrl: sweet?.imageUrl || '',
     },
   });
 
   const onSubmit = async (data: SweetFormData) => {
     const submitData = {
       ...data,
-      image_url: data.image_url || null,
+      imageUrl: data.imageUrl || null,
       description: data.description || null,
     };
 
@@ -140,7 +140,7 @@ export const SweetFormDialog = ({ sweet, trigger }: SweetFormDialogProps) => {
                 name="price"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Price ($)</FormLabel>
+                    <FormLabel>Price (₹)</FormLabel>
                     <FormControl>
                       <Input type="number" step="0.01" min="0" {...field} />
                     </FormControl>
@@ -164,7 +164,7 @@ export const SweetFormDialog = ({ sweet, trigger }: SweetFormDialogProps) => {
             </div>
             <FormField
               control={form.control}
-              name="image_url"
+              name="imageUrl"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Image URL</FormLabel>

@@ -11,7 +11,9 @@ const Index = () => {
     <Layout>
       {/* Hero Section */}
       <section className="relative overflow-hidden py-20 lg:py-32">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-secondary/5 to-accent/10" />
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/15 via-secondary/10 to-accent/20" />
+        <div className="floating-blob" style={{ top: '-40px', left: '-60px', background: 'rgba(255,143,177,0.6)' }} />
+        <div className="floating-blob" style={{ top: '40%', right: '-80px', background: 'rgba(201,122,68,0.5)', animationDelay: '2s' }} />
         <div className="container relative mx-auto px-4">
           <div className="mx-auto max-w-3xl text-center">
             <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-2 text-sm font-medium text-primary">

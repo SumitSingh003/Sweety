@@ -18,18 +18,40 @@ model User {
   id        String   @id @default(uuid())
   email     String   @unique
   password  String
+  fullName  String?
   role      Role     @default(USER)
   createdAt DateTime @default(now())
+
+  purchases Purchase[]
 }
 
 model Sweet {
   id        String   @id @default(uuid())
   name      String
   category  String
+  description String?
   price     Float
   quantity  Int
+  imageUrl  String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  purchases Purchase[]
+}
+
+model Purchase {
+  id              String   @id @default(uuid())
+  userId          String
+  sweetId         String
+  quantity        Int
+  priceAtPurchase Float
+  createdAt       DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sweet Sweet @relation(fields: [sweetId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([sweetId])
 }
 
 enum Role {

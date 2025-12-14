@@ -39,9 +39,9 @@ export const SweetCard = ({ sweet }: SweetCardProps) => {
   return (
     <Card className="group overflow-hidden border-border/50 bg-card hover:shadow-soft transition-all duration-300 hover:-translate-y-1">
       <div className="relative aspect-square overflow-hidden bg-muted">
-        {sweet.image_url ? (
+        {sweet.imageUrl ? (
           <img
-            src={sweet.image_url}
+            src={sweet.imageUrl}
             alt={sweet.name}
             className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
           />

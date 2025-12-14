@@ -26,9 +26,10 @@ const Cart = () => {
     
     try {
       for (const item of items) {
-        for (let i = 0; i < item.quantity; i++) {
-          await purchaseMutation.mutateAsync({ sweetId: item.sweet.id, userId: user.id });
-        }
+        await purchaseMutation.mutateAsync({
+          sweetId: item.sweet.id,
+          quantity: item.quantity,
+        });
       }
       clearCart();
       toast.success('Purchase successful! Check your purchase history.');
@@ -84,9 +85,9 @@ const Cart = () => {
               <Card key={item.sweet.id} className="overflow-hidden">
                 <div className="flex gap-4 p-4">
                   <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-lg bg-muted">
-                    {item.sweet.image_url ? (
+                    {item.sweet.imageUrl ? (
                       <img
-                        src={item.sweet.image_url}
+                        src={item.sweet.imageUrl}
                         alt={item.sweet.name}
                         className="h-full w-full object-cover"
                       />

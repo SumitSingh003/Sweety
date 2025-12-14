@@ -1,10 +1,10 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { User, Session } from '@supabase/supabase-js';
-import { supabase } from '@/integrations/supabase/client';
+import { authApi } from '@/lib/api';
+import { AuthUser } from '@/types';
 
 interface AuthContextType {
-  user: User | null;
-  session: Session | null;
+  user: AuthUser | null;
+  token: string | null;
   isAdmin: boolean;
   isLoading: boolean;
   signUp: (email: string, password: string, fullName: string) => Promise<{ error: Error | null }>;
@@ -14,95 +14,73 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+const TOKEN_KEY = 'token';
+const USER_KEY = 'user';
+
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
+  const [token, setToken] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  const checkAdminRole = async (userId: string) => {
-    try {
-      const { data, error } = await supabase.rpc('has_role', {
-        _user_id: userId,
-        _role: 'admin'
-      });
-      
-      if (error) {
-        console.error('Error checking admin role:', error);
-        return false;
-      }
-      return data === true;
-    } catch (error) {
-      console.error('Error checking admin role:', error);
-      return false;
-    }
-  };
-
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        
-        if (session?.user) {
-          setTimeout(() => {
-            checkAdminRole(session.user.id).then(setIsAdmin);
-          }, 0);
-        } else {
-          setIsAdmin(false);
-        }
-        
-        setIsLoading(false);
-      }
-    );
+    const savedToken = localStorage.getItem(TOKEN_KEY);
+    const savedUser = localStorage.getItem(USER_KEY);
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      
-      if (session?.user) {
-        checkAdminRole(session.user.id).then(setIsAdmin);
-      }
-      
-      setIsLoading(false);
-    });
+    if (savedToken && savedUser) {
+      setToken(savedToken);
+      const parsedUser = JSON.parse(savedUser) as AuthUser;
+      setUser(parsedUser);
+      setIsAdmin(parsedUser.role === 'ADMIN');
+    }
 
-    return () => subscription.unsubscribe();
+    setIsLoading(false);
   }, []);
 
-  const signUp = async (email: string, password: string, fullName: string) => {
-    const redirectUrl = `${window.location.origin}/`;
-    
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: redirectUrl,
-        data: {
-          full_name: fullName,
-        },
-      },
-    });
-    
-    return { error: error as Error | null };
+  const persistAuth = (newToken: string, newUser: AuthUser) => {
+    localStorage.setItem(TOKEN_KEY, newToken);
+    localStorage.setItem(USER_KEY, JSON.stringify(newUser));
+    setToken(newToken);
+    setUser(newUser);
+    setIsAdmin(newUser.role === 'ADMIN');
   };
 
-  const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    
-    return { error: error as Error | null };
-  };
-
-  const signOut = async () => {
-    await supabase.auth.signOut();
+  const clearAuth = () => {
+    localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(USER_KEY);
+    setToken(null);
+    setUser(null);
     setIsAdmin(false);
   };
 
+  const signUp = async (email: string, password: string, fullName: string) => {
+    try {
+      const { data } = await authApi.register(email, password, fullName);
+      persistAuth(data.accessToken, data.user);
+      return { error: null };
+    } catch (err: any) {
+      const message = err?.response?.data?.message || err?.message || 'Registration failed';
+      return { error: new Error(message) };
+    }
+  };
+
+  const signIn = async (email: string, password: string) => {
+    try {
+      const { data } = await authApi.login(email, password);
+      persistAuth(data.accessToken, data.user);
+      return { error: null };
+    } catch (err: any) {
+      const message = err?.response?.data?.message || err?.message || 'Sign-in failed';
+      return { error: new Error(message) };
+    }
+  };
+
+  const signOut = async () => {
+    clearAuth();
+  };
+
   return (
-    <AuthContext.Provider value={{ user, session, isAdmin, isLoading, signUp, signIn, signOut }}>
+    <AuthContext.Provider value={{ user, token, isAdmin, isLoading, signUp, signIn, signOut }}>
       {children}
     </AuthContext.Provider>
   );

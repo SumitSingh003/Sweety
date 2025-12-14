@@ -5,9 +5,9 @@ export interface Sweet {
   description: string | null;
   price: number;
   quantity: number;
-  image_url: string | null;
-  created_at: string;
-  updated_at: string;
+  imageUrl: string | null;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface Profile {
@@ -30,16 +30,23 @@ export interface PurchaseHistory {
   user_id: string;
   sweet_id: string;
   quantity: number;
-  price_at_purchase: number;
-  created_at: string;
+  priceAtPurchase: number;
+  createdAt: string;
   sweet?: Sweet;
 }
 
 export type SweetFormData = {
   name: string;
   category: string;
-  description: string;
+  description: string | null;
   price: number;
   quantity: number;
-  image_url: string;
+  imageUrl: string | null;
+};
+
+export type AuthUser = {
+  id: string;
+  email: string;
+  fullName?: string | null;
+  role: 'ADMIN' | 'USER';
 };
