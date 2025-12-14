@@ -61,11 +61,7 @@ A full-stack sweets shop with a NestJS + Prisma backend and a Vite + React + Tai
 - Frontend: `npm run dev`, `npm run build`, `npm run preview`
 
 ## Screenshots
-Add real captures to the `screenshots/` folder (not committed here):
-- Home: `![Home](screenshots/home.png)`
-- Shop: `![Shop](screenshots/shop.png)`
-- Admin: `![Admin](screenshots/admin.png)`
-- Purchases: `![Purchases](screenshots/purchases.png)`
+Added real captures to the `screenshots/` folder.
 
 ## My AI Usage
 - Tools used: GitHub Copilot (ChatGPT, model: GPT-5.1-Codex-Max).
