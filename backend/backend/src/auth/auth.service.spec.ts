@@ -1,12 +1,26 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
+import { PrismaService } from '../prisma/prisma.service';
 
 describe('AuthService', () => {
   let service: AuthService;
 
+  const mockPrisma = {
+    user: {
+      findUnique: jest.fn(),
+      create: jest.fn(),
+    },
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [AuthService],
+      providers: [
+        AuthService,
+        {
+          provide: PrismaService,
+          useValue: mockPrisma,
+        },
+      ],
     }).compile();
 
     service = module.get<AuthService>(AuthService);
@@ -14,17 +28,6 @@ describe('AuthService', () => {
 
   describe('register', () => {
     it('should create a new user with hashed password', async () => {
-      // Arrange
-      const email = 'test@example.com';
-      const password = 'password123';
-
-      // Act
-      // const user = await service.register(email, password);
-
-      // Assert
-      // expect(user.email).toBe(email);
-      // expect(user.password).not.toBe(password);
-
       expect(true).toBe(false);
     });
 
